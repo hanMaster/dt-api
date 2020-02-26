@@ -43,6 +43,12 @@ class DatabaseSeeder extends Seeder
         Employee::create(['name' => 'Киршонков В.В.', 'type' => 'fixed']);
         Employee::create(['name' => 'Гурьянова Ю.', 'type' => 'fixed']);
 
+        Employee::create(['name' => 'Володин С.В.', 'type' => 'dayNight']);
+        Employee::create(['name' => 'Перелешин Е.С.', 'type' => 'dayNight']);
+        Employee::create(['name' => 'Гурьянов Г.Н.', 'type' => 'dayNight']);
+        Employee::create(['name' => 'Демин В.И.', 'type' => 'dayNight']);
+
+
         Employee::create(['name' => 'Толмачев А.Н.', 'type' => 'security']);
         Employee::create(['name' => 'Балашов С.В.', 'type' => 'security']);
         Employee::create(['name' => 'Лобов А.И.', 'type' => 'security']);

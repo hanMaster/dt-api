@@ -18,7 +18,7 @@ class ReportController extends Controller
         $startDay = $date->startOfMonth()->toDateString();
         $endDay = $date->endOfMonth()->toDateString();
 
-        $rows = DB::select(
+        return DB::select(
 
             '     select employee_id, sum(profit) as amount, e.name from
 
@@ -35,7 +35,6 @@ class ReportController extends Controller
             GROUP BY employee_id'
 
             , [$startDay, $endDay, $startDay, $endDay, $startDay, $endDay]);
-        return $rows;
     }
 
 
@@ -61,14 +60,13 @@ class ReportController extends Controller
         $startDay = $date->startOfMonth()->toDateString();
         $endDay = $date->endOfMonth()->toDateString();
 
-        $rows = DB::select(
+        return DB::select(
             'select fd.employee_id as id, sum(fd.profit) as amount, e.name
             from fixed_days as fd
             inner join employees as e on e.id = fd.employee_id
             WHERE day BETWEEN ? and ?
             GROUP BY fd.employee_id'
             , [$startDay, $endDay]);
-        return $rows;
     }
 
     public function securityReport($date)
@@ -77,15 +75,27 @@ class ReportController extends Controller
         $startDay = $date->startOfMonth()->toDateString();
         $endDay = $date->endOfMonth()->toDateString();
 
-        $rows = DB::select(
+        return DB::select(
             'select sd.employee_id as id, sum(sd.profit) as amount, e.name
             from security_days as sd
             inner join employees as e on e.id = sd.employee_id
             WHERE day BETWEEN ? and ?
             GROUP BY sd.employee_id'
             , [$startDay, $endDay]);
-        return $rows;
     }
 
+    public function dayNightReport($date)
+    {
+        $date = Carbon::parse($date, Config::get('timezone'));
+        $startDay = $date->startOfMonth()->toDateString();
+        $endDay = $date->endOfMonth()->toDateString();
 
+        return DB::select(
+            'select dn.employee_id as id, sum(dn.profit) as amount, e.name
+            from day_nights as dn
+            inner join employees as e on e.id = dn.employee_id
+            WHERE day BETWEEN ? and ?
+            GROUP BY dn.employee_id'
+            , [$startDay, $endDay]);
+    }
 }

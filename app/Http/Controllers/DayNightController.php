@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-use App\SecurityDay;
+use App\DayNight;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Config;
 
-class SecurityDayController extends Controller
+class DayNightController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,11 +16,11 @@ class SecurityDayController extends Controller
      * @param $day
      * @return Response
      */
-    public function securityDay($day)
+    public function dayNightDay($day)
     {
         $day = Carbon::parse($day, Config::get('timezone'));
-        $secure = SecurityDay::select('employee_id')->where('day', $day)->get();
-        return $secure;
+        $dayNight = DayNight::select('employee_id')->where('day', $day)->get();
+        return $dayNight;
     }
 
     /**
@@ -31,7 +31,7 @@ class SecurityDayController extends Controller
      */
     public function create(Request $request)
     {
-        $day = new SecurityDay();
+        $day = new DayNight();
         $day->employee_id = $request->employee_id;
         $day->day = Carbon::parse($request->day, Config::get('timezone'));
         $day->profit = $day->employee->salary;
@@ -54,7 +54,7 @@ class SecurityDayController extends Controller
         $response = new Response();
         try {
             $day = Carbon::parse($day, Config::get('timezone'));
-            SecurityDay::where('day', $day)
+            DayNight::where('day', $day)
                 ->where('employee_id', $emp_id)
                 ->delete();
         } catch (\Exception $e) {
