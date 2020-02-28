@@ -15,10 +15,8 @@ class FixedDayController extends Controller
     {
         $day = Carbon::parse($day,Config::get('timezone'));
         $fixes = FixedDay::where('day', $day)->get();
-        $employees = Employee::all();
         foreach ($fixes as $fix) {
-            $empl = $employees->find($fix->employee_id);
-            $fix->name = $empl->name;
+            $fix->name = $fix->employee->name;
         }
         return $fixes;
     }
