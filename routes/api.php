@@ -24,6 +24,7 @@ Route::get('/employees/deal', 'EmployeeController@deal');
 Route::get('/employees/fixed', 'EmployeeController@fixed');
 Route::get('/employees/dayNight', 'EmployeeController@dayNight');
 Route::get('/employees/security', 'EmployeeController@security');
+Route::get('/rates', 'RateController@index');
 
 Route::get('/deal/{day}', 'DealDayController@dealDay');
 Route::get('/fixed/{day}', 'FixedDayController@fixedDay');
@@ -37,6 +38,7 @@ Route::post('/fixed', 'FixedDayController@create');
 Route::post('/security', 'SecurityDayController@create');
 Route::post('/dayNight', 'DayNightController@create');
 Route::post('/travelIncome', 'TravelIncomeController@create');
+Route::post('/rates', 'RateController@store');
 
 Route::delete('/deal/{dealDay}', 'DealDayController@destroy');
 Route::delete('/fixed/{fixedDay}', 'FixedDayController@destroy');

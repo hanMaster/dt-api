@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\DayNight;
+use App\Rate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -20,7 +21,17 @@ class DayNightController extends Controller
     {
         $day = Carbon::parse($day, Config::get('timezone'));
         $dayNight = DayNight::select('employee_id')->where('day', $day)->get();
-        return $dayNight;
+        $result = [];
+        $i = 0;
+        foreach ($dayNight as $dn) {
+            $result[$i]["employee_id"] = $dn->employee_id;
+            $result[$i]["name"] = $dn->employee->name;
+            $i++;
+        }
+        $response = new Response();
+        $response->setContent($result);
+        $response->setStatusCode(200);
+        return $response;
     }
 
     /**
@@ -34,10 +45,13 @@ class DayNightController extends Controller
         $day = new DayNight();
         $day->employee_id = $request->employee_id;
         $day->day = Carbon::parse($request->day, Config::get('timezone'));
-        $day->profit = $day->employee->salary;
+        $rate = Rate::where('title', 'dayNight')->first();
+        $day->profit = $rate->value;
         $day->save();
+        $name = $day->employee->name;
+        $newRecord = '{"employee_id":' . $day->employee_id . ', "name": "' . $name . '"}';
         $response = new Response();
-        $response->setContent($day);
+        $response->setContent($newRecord);
         return $response;
     }
 

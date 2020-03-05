@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Rate;
 use App\SecurityDay;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -34,7 +35,8 @@ class SecurityDayController extends Controller
         $day = new SecurityDay();
         $day->employee_id = $request->employee_id;
         $day->day = Carbon::parse($request->day, Config::get('timezone'));
-        $day->profit = $day->employee->salary;
+        $rate = Rate::where('title', 'security')->first();
+        $day->profit = $rate->value;
         $day->save();
         $response = new Response();
         $response->setContent($day);

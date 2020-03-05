@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\DealDay;
 use App\Employee;
+use App\Rate;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
@@ -42,7 +43,8 @@ class DealDayController extends Controller
         $day->leather = $request->leather;
         $day->wleather = $request->wleather;
         if (isset($request->fixPrice)) {
-            $day->profit = round(($day->leather + $day->wleather) * $request->fixPrice, 2);
+            $rate = Rate::where('title', 'deal')->first();
+            $day->profit = round(($day->leather + $day->wleather) * $rate->value, 2);
         }
         $day->save();
         $response = new Response();
