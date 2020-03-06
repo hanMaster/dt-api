@@ -20,21 +20,41 @@ class ReportController extends Controller
 
         return DB::select(
 
-            '     select employee_id, sum(profit) as amount, e.name from
+            'SELECT employees.name, COALESCE(deal,0) as deal , COALESCE(dayNight,0) as dayNight, COALESCE(fix,0) as fix,COALESCE(travel,0) as travel, COALESCE(secur,0) as secur, ( COALESCE(deal,0) + COALESCE(dayNight,0) + COALESCE(fix,0) + COALESCE(travel,0) + COALESCE(secur,0)) AS total
+FROM
+(SELECT employee_id as id, sum(deal_days.profit) as deal
+FROM deal_days
+WHERE (day BETWEEN ? and ?)
+GROUP BY employee_id) as deal_res
+RIGHT JOIN employees ON deal_res.id = employees.id
 
-            (SELECT employee_id, profit, day FROM deal_days
-            WHERE day BETWEEN ? and ?
-            UNION ALL
-            SELECT employee_id, profit, day FROM fixed_days
-            WHERE day BETWEEN ? and ?
-            UNION ALL
-            SELECT employee_id, profit, day FROM security_days
-            WHERE day BETWEEN ? and ?
-            ) x
-            inner join employees e on e.id = employee_id
-            GROUP BY employee_id'
+LEFT JOIN
+(SELECT employee_id as id, sum(day_nights.profit) as dayNight
+FROM day_nights
+WHERE (day BETWEEN ? and ?)
+GROUP BY employee_id) as dn ON employees.id = dn.id
 
-            , [$startDay, $endDay, $startDay, $endDay, $startDay, $endDay]);
+LEFT JOIN
+(SELECT employee_id as id, sum(fixed_days.profit) as fix
+FROM fixed_days
+WHERE (day BETWEEN ? and ?)
+GROUP BY employee_id) as fd ON employees.id = fd.id
+
+LEFT JOIN
+(SELECT employee_id as id, sum(travel_incomes.income) as travel
+FROM travel_incomes
+WHERE (day BETWEEN ? and ?)
+GROUP BY employee_id) as ti ON employees.id = ti.id
+
+LEFT JOIN
+(SELECT employee_id as id, sum(security_days.profit) as secur
+FROM security_days
+WHERE (day BETWEEN ? and ?)
+GROUP BY employee_id) as sd ON employees.id = sd.id
+
+ORDER BY name'
+
+            , [$startDay, $endDay, $startDay, $endDay, $startDay, $endDay, $startDay, $endDay, $startDay, $endDay]);
     }
 
 
@@ -99,3 +119,45 @@ class ReportController extends Controller
             , [$startDay, $endDay]);
     }
 }
+
+
+/**
+ * SELECT employees.name, COALESCE(deal,0) as deal , COALESCE(dayNight,0) as dayNight, COALESCE(fix,0) as fix,COALESCE(travel,0) as travel, COALESCE(secur,0) as secur, ( COALESCE(deal,0) + COALESCE(dayNight,0) + COALESCE(fix,0) + COALESCE(travel,0) + COALESCE(secur,0)) AS total
+ * FROM
+ * (SELECT employee_id as id, sum(deal_days.profit) as deal
+ * FROM deal_days
+ * WHERE (day BETWEEN '2020-03-01' and '2020-03-31')
+ * GROUP BY employee_id) as deal_res
+ * RIGHT JOIN employees ON deal_res.id = employees.id
+ *
+ * LEFT JOIN
+ * (SELECT employee_id as id, sum(day_nights.profit) as dayNight
+ * FROM day_nights
+ * WHERE (day BETWEEN '2020-03-01' and '2020-03-31')
+ * GROUP BY employee_id) as dn ON employees.id = dn.id
+ *
+ * LEFT JOIN
+ * (SELECT employee_id as id, sum(fixed_days.profit) as fix
+ * FROM fixed_days
+ * WHERE (day BETWEEN '2020-03-01' and '2020-03-31')
+ * GROUP BY employee_id) as fd ON employees.id = fd.id
+ *
+ * LEFT JOIN
+ * (SELECT employee_id as id, sum(travel_incomes.income) as travel
+ * FROM travel_incomes
+ * WHERE (day BETWEEN '2020-03-01' and '2020-03-31')
+ * GROUP BY employee_id) as ti ON employees.id = ti.id
+ *
+ * LEFT JOIN
+ * (SELECT employee_id as id, sum(security_days.profit) as secur
+ * FROM security_days
+ * WHERE (day BETWEEN '2020-03-01' and '2020-03-31')
+ * GROUP BY employee_id) as sd ON employees.id = sd.id
+ *
+ * ORDER BY name
+ *
+ *
+ *
+ *
+ *
+ */
